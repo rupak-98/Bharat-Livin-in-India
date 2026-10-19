@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Bharat: Livin In India — Prototype</title>
+<style>
+  :root{
+    --bg: light-dark(#f3f6fb,#08111f);
+    --surface: light-dark(#ffffff,#101c2d);
+    --surface-2: light-dark(#edf3fa,#15253a);
+    --text: light-dark(#172033,#f4f7fb);
+    --muted: light-dark(#6b7890,#a8b5c8);
+    --border: light-dark(#dbe4ef,#29405d);
+    --blue:#2268d9;
+    --teal:#18a99a;
+    --saffron:#f2a629;
+    --green:#31b36b;
+    --danger:#df5d5d;
+    --shadow:0 14px 40px rgba(5,25,55,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+  button,select,input{font:inherit}
+  button{cursor:pointer}
+  #app{min-height:100vh;background-color:var(--bg);border-radius:0;padding:0 0 calc(88px + env(safe-area-inset-bottom));}
+  .phone-shell{width:min(100%,520px);margin:0 auto;min-height:100vh;background:var(--bg);position:relative}
+  .topbar{position:sticky;top:0;z-index:10;padding:16px 18px 12px;background:linear-gradient(180deg,var(--bg) 78%,transparent);backdrop-filter:blur(8px)}
+  .brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--saffron),#ffcf6f);display:grid;place-items:center;font-weight:900;color:#182233;box-shadow:var(--shadow)}
+  .brand h1{font-size:18px;line-height:1.05;margin:0}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+  .demo-pill{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border:1px solid var(--border);background:var(--surface);border-radius:999px;color:var(--muted)}
+  .content{padding:0 18px 24px}
+  .hero{background:linear-gradient(135deg,#0e2d57 0%,#124d7e 54%,#1f756f 100%);color:white;border-radius:26px;padding:20px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08);right:-60px;top:-65px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a9d6ff}
+  .hero h2{font-size:26px;margin:8px 0 8px;max-width:330px}.hero p{font-size:13px;line-height:1.5;color:#d8e8f7;margin:0 0 16px;max-width:390px}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .primary,.secondary,.choice,.mini-btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800}
+  .primary{background:var(--saffron);color:#182233}.secondary{background:rgba(255,255,255,.13);color:white;border:1px solid rgba(255,255,255,.25)}
+  .section-title{display:flex;align-items:end;justify-content:space-between;margin:22px 2px 10px}.section-title h3{font-size:16px;margin:0}.section-title span{font-size:11px;color:var(--muted)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(7,30,61,.06)}
+  .profile-card{display:grid;grid-template-columns:58px 1fr auto;gap:12px;align-items:center}
+  .avatar{width:58px;height:58px;border-radius:18px;background:linear-gradient(145deg,#d5e9ff,#ffe0ae);display:grid;place-items:center;font-size:30px}
+  .profile-card h4{margin:0 0 4px;font-size:16px}.muted{color:var(--muted)}
+  .money{text-align:right}.money b{display:block;font-size:17px}.money small{color:var(--muted)}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:13px}.stat-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800}.bar{height:7px;background:var(--surface-2);border-radius:99px;margin-top:9px;overflow:hidden}.bar i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+  .event-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:17px;box-shadow:var(--shadow)}
+  .event-head{display:flex;align-items:flex-start;gap:12px}.event-icon{width:44px;height:44px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;font-size:23px}.event-card h4{margin:0 0 5px;font-size:17px}.event-card p{font-size:13px;line-height:1.45;color:var(--muted);margin:0}
+  .choices{display:grid;gap:9px;margin-top:14px}.choice{text-align:left;background:var(--surface-2);border:1px solid var(--border);color:var(--text);padding:13px 14px}.choice strong{display:block;font-size:13px}.choice span{font-size:11px;color:var(--muted)}.choice:hover{border-color:var(--blue)}
+  .result{margin-top:13px;padding:12px 13px;border-radius:14px;background:rgba(49,179,107,.1);border:1px solid rgba(49,179,107,.35);font-size:12px;line-height:1.45;display:none}
+  .tabs{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:10px 6px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 94%,transparent);border-top:1px solid var(--border);backdrop-filter:blur(18px);z-index:30}
+  .tab{border:0;background:transparent;color:var(--muted);padding:7px 2px;border-radius:13px;font-size:10px;font-weight:700}.tab i{display:block;font-style:normal;font-size:20px;margin-bottom:3px}.tab.active{background:var(--surface-2);color:var(--blue)}
+  .screen{display:none}.screen.active{display:block}
+  .list{display:grid;gap:10px}.item{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px}.item-icon{width:45px;height:45px;border-radius:14px;display:grid;place-items:center;background:var(--surface-2);font-size:22px}.item-body{flex:1}.item-body b{display:block;font-size:13px}.item-body span{display:block;font-size:11px;color:var(--muted);margin-top:3px}.mini-btn{padding:9px 11px;font-size:11px;background:var(--blue);color:white}.mini-btn.alt{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
+  .quest{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center}.quest .check{width:38px;height:38px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center}.quest.done .check{background:rgba(49,179,107,.15);color:var(--green)}
+  .tag{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border);font-size:10px;font-weight:800;color:var(--muted);margin:4px 4px 0 0}
+  .notice{font-size:11px;line-height:1.45;padding:11px 12px;border:1px dashed var(--border);border-radius:14px;color:var(--muted);background:var(--surface-2)}
+  .modal{position:fixed;inset:0;background:rgba(4,11,23,.72);display:none;place-items:center;padding:18px;z-index:100}.modal.show{display:grid}.sheet{width:min(100%,480px);max-height:92vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:26px;padding:20px;box-shadow:var(--shadow)}
+  .sheet h2{margin:0 0 6px}.sheet p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.5}.field{margin:12px 0}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:6px}.field input,.field select{width:100%;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:13px;padding:12px}
+  .spin-card{padding:15px;border:1px solid var(--border);background:var(--surface-2);border-radius:17px;margin:12px 0}.spin-card b{display:block;margin-bottom:5px}.spin-card span{font-size:12px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);opacity:0;transition:.25s;z-index:120;background:#12223a;color:white;padding:11px 14px;border-radius:14px;font-size:12px;box-shadow:var(--shadow);width:max-content;max-width:85%}.toast.show{opacity:1;transform:translate(-50%,0)}
+  .small-note{font-size:10px;color:var(--muted);line-height:1.4}
+  .engine{background:linear-gradient(135deg,#071d35,#103b55);color:#fff;border-radius:22px;padding:17px;box-shadow:var(--shadow)}
+  .engine h4{margin:0 0 5px;font-size:16px}.engine p{margin:0;color:#c9dbea;font-size:12px;line-height:1.45}.engine-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:13px}.engine-cell{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px}.engine-cell b{display:block;font-size:12px}.engine-cell span{display:block;font-size:10px;color:#b9d0e3;margin-top:3px}.prob{height:8px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:8px}.prob i{display:block;height:100%;background:var(--saffron);border-radius:99px}.metric-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:9px 0;border-bottom:1px solid var(--border)}.metric-row:last-child{border-bottom:0}.metric-row b{font-size:12px}.pill-live{display:inline-flex;padding:5px 8px;border-radius:999px;background:rgba(49,179,107,.14);color:var(--green);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.timeline{display:grid;gap:8px}.timeline-item{display:grid;grid-template-columns:28px 1fr;gap:9px}.timeline-dot{width:28px;height:28px;border-radius:10px;background:var(--surface-2);display:grid;place-items:center;font-size:14px}.timeline-item b{font-size:12px}.timeline-item span{display:block;font-size:10px;color:var(--muted);margin-top:2px}.choice.locked{opacity:.55}.score-badge{font-size:10px;font-weight:900;padding:6px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border)}
+  .committee{border:1px solid rgba(242,166,41,.45);background:rgba(242,166,41,.08);border-radius:16px;padding:12px;font-size:11px;line-height:1.45}.committee b{display:block;margin-bottom:4px}.data-table{width:100%;border-collapse:collapse;font-size:10px}.data-table th,.data-table td{text-align:left;padding:8px 5px;border-bottom:1px solid var(--border)}.data-table th{color:var(--muted);font-weight:800}
+  .demo-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.demo-step{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid var(--border);border-radius:14px;background:var(--surface)}.demo-step .num{width:25px;height:25px;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;font-weight:900;font-size:10px}.demo-step.active{border-color:var(--saffron);box-shadow:0 0 0 2px rgba(242,166,41,.12)}.demo-step b{font-size:11px}.demo-step span{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+  .action-card{display:grid;grid-template-columns:1fr 1fr;gap:9px}.action{background:var(--surface-2);border:1px solid var(--border);border-radius:16px;padding:12px;text-align:left;color:var(--text)}.action b{display:block;font-size:12px}.action span{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:4px}.action:disabled{opacity:.45;cursor:not-allowed}.year-badge{font-size:10px;font-weight:900;padding:6px 9px;border-radius:999px;background:rgba(34,104,217,.10);color:var(--blue);border:1px solid rgba(34,104,217,.2)}
+  @media(min-width:700px){body{padding:18px 0}.phone-shell{min-height:calc(100vh - 36px);border:1px solid var(--border);border-radius:30px;overflow:hidden;box-shadow:var(--shadow)}.tabs{bottom:18px;border-radius:0 0 30px 30px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <main class="phone-shell">
+    <header class="topbar">
+      <div class="brand-row">
+        <div class="brand"><div class="logo">भ</div><div><h1>BHARAT: LIVIN IN INDIA</h1><small>Live choices. Indian consequences.</small></div></div>
+        <div class="demo-pill">Prototype</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section id="home" class="screen active">
+        <div class="hero">
+          <div class="eyebrow">Your life begins at 18</div>
+          <h2>What kind of life will you build?</h2>
+          <p>Choose education, jobs, money moves and everyday decisions. Your current life state changes what becomes possible next.</p>
+          <div class="hero-actions"><button class="primary" id="newLifeBtn">Start / Restart Life</button><button class="secondary" id="ageBtn">Advance 1 Year</button></div>
+        </div>
+
+        <div class="section-title"><h3>Your Life</h3><span id="dayLabel">Age 18</span></div>
+        <div class="card profile-card">
+          <div class="avatar">🧑🏽</div>
+          <div><h4 id="playerName">Arjun Sharma</h4><div class="muted" id="playerMeta">Delhi • Middle-income family</div></div>
+          <div class="money"><b id="wallet">₹12,500</b><small>cash</small></div>
+        </div>
+
+        <div class="section-title"><h3>Life Stats</h3><span>Persistent state</span></div>
+        <div class="stat-grid" id="stats"></div>
+
+        <div class="section-title"><h3>Daily Life</h3><span class="year-badge" id="actionPoints">3 actions left</span></div>
+        <div class="card"><div class="action-card" id="dailyActions"></div></div>
+
+        <div class="section-title"><h3>Today's Life Event</h3><span>Illustrative demo logic</span></div>
+        <div class="event-card" id="eventCard"></div>
+      </section>
+
+      <section id="career" class="screen">
+        <div class="section-title"><h3>Career</h3><span id="careerStatus">Exploring options</span></div>
+        <div class="list" id="careerList"></div>
+        <div class="section-title"><h3>Career Tips</h3></div>
+        <div class="notice">Prototype logic uses illustrative salaries and outcome rules. A production version would connect validated regional/career data to the calibration engine.</div>
+      </section>
+
+      <section id="education" class="screen">
+        <div class="section-title"><h3>Education</h3><span id="eduStatus">Class XII completed</span></div>
+        <div class="list" id="educationList"></div>
+      </section>
+
+      <section id="quests" class="screen">
+        <div class="section-title"><h3>Life Quests</h3><span>Small goals, real trade-offs</span></div>
+        <div class="list" id="questList"></div>
+      </section>
+
+      <section id="engine" class="screen">
+        <div class="section-title"><h3>Life Calibration Engine</h3><span class="pill-live">Demo Active</span></div>
+        <div class="engine">
+          <h4>Indian Context → Probability → Life State</h4>
+          <p>The demonstrator combines player state, regional context and illustrative socio-economic inputs to calculate the next-event weighting. This is the core architecture proposed for the patent discussion.</p>
+          <div class="engine-grid" id="engineGrid"></div>
+        </div>
+        <div class="section-title"><h3>Current Event Calibration</h3><span id="probabilityLabel">Calculated locally</span></div>
+        <div class="card" id="calibrationCard"></div>
+        <div class="section-title"><h3>State Transition Log</h3><span>Most recent decisions</span></div>
+        <div class="card"><div class="timeline" id="timeline"></div></div>
+        <div class="section-title"><h3>Committee View</h3></div>
+        <div class="committee"><b>What this demonstrates</b>Changing the city, family background, education, career and financial state changes the computed event profile and therefore changes the available life path. Production implementation would replace these illustrative coefficients with validated datasets and a governed calibration service.</div>
+        <div class="demo-controls"><button class="primary" id="committeeDemoBtn">▶ Committee Demo</button><button class="mini-btn alt" id="resetDemoBtn">↺ Reset Demo</button></div>
+        <div class="card" style="margin-top:10px"><div class="small-note"><b>Recommended presentation flow</b></div><div id="demoSteps" style="margin-top:8px"></div></div>
+      </section>
+
+      <section id="finance" class="screen">
+        <div class="section-title"><h3>Finance</h3><span>Monthly life economics</span></div>
+        <div class="card" id="financeCard"></div>
+        <div class="section-title"><h3>Money Decisions</h3><span>Choose carefully</span></div>
+        <div class="list" id="financeList"></div>
+      </section>
+
+      <section id="social" class="screen">
+        <div class="section-title"><h3>People & Social Life</h3><span>Your network matters</span></div>
+        <div class="card" id="socialCard"></div>
+        <div class="section-title"><h3>Relationships</h3><span>Build your support network</span></div>
+        <div class="list" id="socialList"></div>
+      </section>
+
+      <section id="profile" class="screen">
+        <div class="section-title"><h3>Profile</h3><span>Your current path</span></div>
+        <div class="card profile-card">
+          <div class="avatar">🧑🏽</div><div><h4 id="profileName">Arjun Sharma</h4><div class="muted" id="profileMeta">Delhi • Age 18</div></div><div class="money"><b id="score">150</b><small>life score</small></div>
+        </div>
+        <div class="section-title"><h3>Life Summary</h3></div>
+        <div class="card" id="summary"></div>
+        <div class="section-title"><h3>Current Tags</h3></div>
+        <div class="card" id="tags"></div>
+        <div class="section-title"><h3>Prototype Note</h3></div>
+        <div class="notice">This limited prototype is deliberately lightweight and does not claim to implement the patent-oriented live data-calibration backend. All values and events here are illustrative and local to the demo.</div>
+      </section>
+    </div>
+
+    <nav class="tabs" aria-label="Main navigation">
+      <button class="tab active" data-target="home"><i>🏠</i>Home</button>
+      <button class="tab" data-target="career"><i>💼</i>Career</button>
+      <button class="tab" data-target="education"><i>🎓</i>Education</button>
+      <button class="tab" data-target="engine"><i>⚙️</i>Engine</button>
+      <button class="tab" data-target="finance"><i>₹</i>Money</button>
+      <button class="tab" data-target="social"><i>🤝</i>Social</button>
+      <button class="tab" data-target="profile"><i>👤</i>Profile</button>
+    </nav>
+  </main>
+
+  <div class="modal" id="onboarding">
+    <div class="sheet">
+      <div class="eyebrow" style="color:var(--blue)">Create your Indian life</div>
+      <h2>Who are you starting as?</h2>
+      <p>Choose a name and region, then reveal an illustrative family background. Every restart can lead to a different path.</p>
+      <div class="field"><label>Name</label><input id="nameInput" maxlength="24" value="Arjun Sharma" /></div>
+      <div class="two">
+        <div class="field"><label>Starting city</label><select id="cityInput"><option>Delhi</option><option>Pune</option><option>Kolkata</option><option>Jaipur</option><option>Bengaluru</option><option>Lucknow</option></select></div>
+        <div class="field"><label>Life focus</label><select id="focusInput"><option value="balanced">Balanced</option><option value="career">Career</option><option value="wealth">Wealth</option><option value="learning">Learning</option></select></div>
+      </div>
+      <button class="mini-btn alt" id="spinBtn" style="width:100%;padding:12px">🎡 Reveal Family Background</button>
+      <div class="spin-card"><b id="familyTitle">Middle-income family</b><span id="familyDesc">Supportive household, modest savings, steady expectations.</span></div>
+      <button class="primary" id="beginBtn" style="width:100%">Begin Life at 18</button>
+      <p class="small-note" style="margin-top:10px">Inspired by common text-based life-simulation patterns; visual design and mechanics here are original to this Bharat prototype.</p>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const backgrounds = [
+  {name:'Lower-middle-income family', desc:'Tight monthly budget, strong motivation to improve.', cash:6500, wealth:32, social:52},
+  {name:'Middle-income family', desc:'Supportive household, modest savings, steady expectations.', cash:12500, wealth:48, social:58},
+  {name:'Upper-middle-income family', desc:'More financial flexibility, higher academic expectations.', cash:32000, wealth:68, social:62},
+  {name:'Small business family', desc:'Income can fluctuate, entrepreneurship is familiar.', cash:18000, wealth:54, social:66}
+];
+const baseState = () => ({
+  name:'Arjun Sharma', city:'Delhi', age:18, family:backgrounds[1], cash:12500, score:150,
+  education:58, career:20, finance:48, wellbeing:72, social:58,
+  degree:'Class XII completed', job:'No full-time job', focus:'balanced', yearChoices:0,
+  tags:['New Adult','Family Support'], completed:{}, log:[], currentEvent:0, assets:[], relationships:{family:62,friend:45,mentor:18}, monthlyIncome:0, monthlyExpense:4500, actionPoints:3
+});
+let state = load() || baseState();
+let bgPick = state.family || backgrounds[1];
+
+const events = [
+  {icon:'🎓', title:'College or work?', text:'You have completed Class XII. Your family can support some education, but not without trade-offs.', choices:[
+    {label:'Choose a public college', sub:'Lower fees • steady education gain', cash:-8000, education:12, finance:-3, score:18, tag:'College Student', note:'You choose a lower-cost degree path and preserve more of your savings.'},
+    {label:'Take a private course', sub:'Higher fees • faster skill gain', cash:-15000, education:16, finance:-7, score:20, tag:'Skill Builder', note:'You invest more upfront for specialised training.'},
+    {label:'Start working now', sub:'Income first • slower education growth', cash:9000, career:10, education:2, score:12, tag:'Early Earner', note:'You prioritise income and practical experience.'}
+  ]},
+  {icon:'🏙️', title:'A job opportunity in another city', text:'A junior role pays more, but moving means rent, travel and leaving your support network.', choices:[
+    {label:'Move for the job', sub:'Career upside • higher living cost', cash:7000, career:13, finance:-4, social:-4, score:20, tag:'Mobile Professional', note:'You relocate and gain career momentum, but monthly costs rise.'},
+    {label:'Stay and search locally', sub:'Lower risk • slower career gain', cash:2500, career:6, wellbeing:4, score:10, tag:'Local Path', note:'You remain close to home and keep costs predictable.'}
+  ]},
+  {icon:'💸', title:'Your first serious money decision', text:'You have some cash saved. A friend suggests spending it, while your family recommends keeping an emergency fund.', choices:[
+    {label:'Build an emergency fund', sub:'Less excitement • stronger resilience', cash:-1000, finance:11, score:18, tag:'Saver', note:'You set money aside and improve your financial buffer.'},
+    {label:'Buy a new phone', sub:'Immediate happiness • savings fall', cash:-12000, wellbeing:7, finance:-8, score:5, tag:'Big Spender', note:'You enjoy the upgrade, but your savings take a hit.'},
+    {label:'Invest in a short course', sub:'Skill gain • medium cost', cash:-6000, education:8, career:5, finance:1, score:16, tag:'Upskiller', note:'You spend on a skill that may improve future job options.'}
+  ]},
+  {icon:'🤝', title:'Family responsibility arrives', text:'A family expense appears unexpectedly. You need to decide how much you can contribute.', choices:[
+    {label:'Contribute generously', sub:'Social gain • cash falls', cash:-7000, social:10, wellbeing:3, score:15, tag:'Family First', note:'Your contribution strengthens family trust.'},
+    {label:'Contribute a smaller amount', sub:'Balanced impact', cash:-3000, social:5, finance:2, score:11, tag:'Balanced Support', note:'You help while protecting some of your own buffer.'}
+  ]}
+];
+
+const careers = [
+  {icon:'💻', title:'Junior Software Associate', city:'Bengaluru / Pune', req:64, pay:28000, career:12},
+  {icon:'🏦', title:'Banking Operations Trainee', city:'Pan-India', req:56, pay:24000, career:9},
+  {icon:'🛒', title:'E-commerce Executive', city:'Delhi / Jaipur', req:48, pay:21000, career:8},
+  {icon:'🧰', title:'Skilled Technical Apprentice', city:'Regional', req:42, pay:18000, career:7}
+];
+const eduOptions = [
+  {icon:'🏛️', title:'Public University Degree', desc:'3-year degree • lower tuition', cost:8000, gain:12, label:'Enroll'},
+  {icon:'🧑‍💻', title:'Digital Skills Certificate', desc:'Short course • practical focus', cost:4500, gain:8, label:'Join'},
+  {icon:'📊', title:'Commerce & Finance Diploma', desc:'Career-oriented • medium cost', cost:6000, gain:10, label:'Join'},
+  {icon:'🛠️', title:'Technical / Vocational Track', desc:'Hands-on learning • faster job path', cost:3500, gain:7, label:'Join'}
+];
+const quests = [
+  {id:'save', icon:'💰', title:'Build ₹20,000 cash buffer', reward:25, test:s=>s.cash>=20000},
+  {id:'edu', icon:'📚', title:'Reach Education 70', reward:20, test:s=>s.education>=70},
+  {id:'career', icon:'🚀', title:'Reach Career 40', reward:20, test:s=>s.career>=40}
+];
+const cityProfiles = {
+  Delhi:{cost:1.12,career:1.08,education:1.02,network:1.05,stress:1.08},
+  Pune:{cost:1.02,career:1.04,education:1.06,network:1.00,stress:0.98},
+  Kolkata:{cost:0.86,career:0.94,education:1.04,network:1.08,stress:0.92},
+  Jaipur:{cost:0.84,career:0.90,education:0.98,network:1.03,stress:0.94},
+  Bengaluru:{cost:1.16,career:1.16,education:1.08,network:1.02,stress:1.10},
+  Lucknow:{cost:0.80,career:0.92,education:1.00,network:1.06,stress:0.90}
+};
+const moneyMoves = [
+  {icon:'🏦',title:'Open a recurring deposit',desc:'Commit ₹2,000 • improve financial resilience',cost:2000,finance:10,score:10,tag:'Disciplined Saver'},
+  {icon:'🛵',title:'Buy a practical vehicle',desc:'Pay ₹18,000 • improve mobility and job access',cost:18000,career:7,wellbeing:3,finance:-5,score:12,tag:'Vehicle Owner'},
+  {icon:'🏠',title:'Upgrade your living situation',desc:'Pay ₹7,500 • improve wellbeing, raise monthly cost',cost:7500,wellbeing:9,finance:-4,score:8,tag:'Independent Living'}
+];
+const socialOptions = [
+  {icon:'👪',title:'Spend time with family',desc:'Strengthen your support network',gain:8,stat:'family',wellbeing:4,score:7,tag:'Family Connected'},
+  {icon:'🧑‍🤝‍🧑',title:'Join a local community group',desc:'Meet people and broaden your network',gain:9,stat:'friend',social:8,score:8,tag:'Community Builder'},
+  {icon:'🧭',title:'Find a career mentor',desc:'Trade time for long-term guidance',gain:12,stat:'mentor',career:6,score:10,tag:'Mentored'}
+];
+
+function clamp(v){return Math.max(0,Math.min(100,v));}
+function money(v){return '₹'+Math.round(v).toLocaleString('en-IN');}
+function save(){localStorage.setItem('bharatLivinPrototype',JSON.stringify(state));}
+function load(){try{const saved=JSON.parse(localStorage.getItem('bharatLivinPrototype'));if(!saved)return null;const b=baseState();return {...b,...saved,relationships:{...b.relationships,...(saved.relationships||{})},assets:Array.isArray(saved.assets)?saved.assets:[],tags:Array.isArray(saved.tags)?saved.tags:b.tags,completed:saved.completed||{},log:Array.isArray(saved.log)?saved.log:[]}}catch(e){return null}}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function addTag(tag){if(tag && !state.tags.includes(tag)) state.tags.push(tag)}
+function applyChange(c){['education','career','finance','wellbeing','social'].forEach(k=>{if(c[k])state[k]=clamp(state[k]+c[k])}); if(c.cash)state.cash=Math.max(0,state.cash+c.cash); if(c.score)state.score+=c.score; addTag(c.tag); state.yearChoices++; state.log.unshift(c.note||'A life choice changed your path.'); state.currentEvent=(state.currentEvent+1)%events.length; checkQuests(); save(); render();}
+function checkQuests(){quests.forEach(q=>{if(!state.completed[q.id] && q.test(state)){state.completed[q.id]=true;state.score+=q.reward;toast('Quest complete! +'+q.reward+' life score')}})}
+function calibrate(){const c=cityProfiles[state.city]||cityProfiles.Delhi;const familyFactor=(state.family?.wealth||48)/50;const financialPressure=clamp(100-state.finance);const careerOpportunity=clamp(state.career*c.career);const educationFit=clamp(state.education*c.education);const networkFit=clamp(state.social*c.network);const stability=clamp((state.wellbeing+state.finance)/2/c.stress);const weights={education:educationFit*0.30,career:careerOpportunity*0.28,finance:financialPressure*0.20,social:networkFit*0.12,wellbeing:stability*0.10};const total=Object.values(weights).reduce((a,b)=>a+b,0)||1;Object.keys(weights).forEach(k=>weights[k]=Math.round(weights[k]/total*100));return {c,familyFactor,financialPressure,careerOpportunity,educationFit,networkFit,stability,weights}}
+function renderDailyActions(){const actions=[{icon:'📚',title:'Study & upskill',desc:'Spend ₹500 • +4 Education • +2 Career',cost:500,education:4,career:2,score:4,tag:'Self Learner'},{icon:'💼',title:'Work / side hustle',desc:'Earn ₹1,500 • +3 Career • -2 Wellbeing',cash:1500,career:3,wellbeing:-2,score:5,tag:'Hustler',requiresJob:false},{icon:'👪',title:'Family time',desc:'+5 Social • +4 Wellbeing',social:5,wellbeing:4,score:4,tag:'Family Connected'},{icon:'🧘',title:'Rest & recharge',desc:'+7 Wellbeing • -1 Career',wellbeing:7,career:-1,score:3,tag:'Well Balanced'}];document.getElementById('actionPoints').textContent=`${state.actionPoints} action${state.actionPoints===1?'':'s'} left`;document.getElementById('dailyActions').innerHTML=actions.map((a,i)=>`<button class="action" data-action="${i}" ${state.actionPoints<=0||state.cash<a.cost?'disabled':''}><b>${a.icon} ${a.title}</b><span>${state.cash<a.cost&&a.cost?'Need '+money(a.cost):a.desc}</span></button>`).join('');document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>{const a=actions[+b.dataset.action];if(state.actionPoints<=0||state.cash<a.cost)return;if(a.cost)state.cash-=a.cost;if(a.cash)state.cash+=a.cash;['education','career','finance','wellbeing','social'].forEach(k=>{if(a[k])state[k]=clamp(state[k]+a[k])});state.score+=a.score;addTag(a.tag);state.actionPoints--;state.log.unshift(`Daily action: ${a.title}.`);checkQuests();save();render();toast(a.title+' completed')})}
+function renderEngine(){const d=calibrate();document.getElementById('engineGrid').innerHTML=[['Player state',`${Math.round((state.education+state.career+state.finance+state.wellbeing+state.social)/5)} index`],['Regional context',`${state.city} × ${d.c.career.toFixed(2)} career`],['Socio-economic input',`${state.family.name.replace(' family','')} baseline`],['Next event driver',`${Object.entries(d.weights).sort((a,b)=>b[1]-a[1])[0][0]} ${Math.max(...Object.values(d.weights))}%`]].map(x=>`<div class="engine-cell"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');const e=events[state.currentEvent%events.length];const confidence=Math.max(...Object.values(d.weights));document.getElementById('probabilityLabel').textContent=`${confidence}% dominant factor`;document.getElementById('calibrationCard').innerHTML=`<div class="metric-row"><span>Current event</span><b>${e.title}</b></div><div class="metric-row"><span>Education influence</span><b>${d.weights.education}%</b></div><div class="metric-row"><span>Career influence</span><b>${d.weights.career}%</b></div><div class="metric-row"><span>Financial pressure</span><b>${d.weights.finance}%</b></div><div class="metric-row"><span>Social context</span><b>${d.weights.social}%</b></div><div class="metric-row"><span>Wellbeing / stability</span><b>${d.weights.wellbeing}%</b></div><div class="prob"><i style="width:${confidence}%"></i></div><div class="small-note" style="margin-top:9px">Illustrative calibration only: coefficients are demonstration values, not official statistics.</div>`;const rows=state.log.slice(0,6);document.getElementById('timeline').innerHTML=rows.length?rows.map((x,i)=>`<div class="timeline-item"><div class="timeline-dot">${i===0?'↗':'•'}</div><div><b>${i===0?'Latest transition':'Earlier transition'}</b><span>${x}</span></div></div>`).join(''):`<div class="muted" style="font-size:11px">Make a life choice to populate the transition log.</div>`}
+function renderDemoSteps(active=0){const steps=[['1','Create life','City + family'],['2','Make choice','Player decision'],['3','Change state','Education / money'],['4','Calibrate','Engine recalculates'],['5','Advance','New life event']];document.getElementById('demoSteps').innerHTML=steps.map((s,i)=>`<div class="demo-step ${i===active?'active':''}"><div class="num">${s[0]}</div><div><b>${s[1]}</b><span>${s[2]}</span></div></div>`).join('')}
+function runCommitteeDemo(){const original={...state,relationships:{...state.relationships},assets:[...state.assets],tags:[...state.tags],completed:{...state.completed},log:[...state.log]};const cityOrder=['Delhi','Kolkata','Bengaluru','Pune'];state=baseState();state.name='Committee Demo';state.city=cityOrder[0];state.family=backgrounds[1];state.cash=12500;state.finance=48;state.social=58;state.actionPoints=3;save();render();show('home');renderDemoSteps(0);setTimeout(()=>{state.education+=12;state.cash-=8000;state.degree='Public University Degree';state.actionPoints=2;state.log.unshift('Demo: selected a public college.');render();renderDemoSteps(1);toast('Step 2: player decision applied')},1200);setTimeout(()=>{state.city='Bengaluru';state.career+=13;state.finance-=4;state.cash+=7000;state.log.unshift('Demo: moved to Bengaluru for opportunity.');render();show('engine');renderDemoSteps(3);toast('Step 4: regional calibration changed')},2400);setTimeout(()=>{state.age=19;state.currentEvent=1;state.cash+=2500;state.score+=5;state.actionPoints=3;state.log.unshift('Demo: advanced one year; new event profile generated.');render();show('engine');renderDemoSteps(4);toast('Demo complete: new life state generated')},3600);window._demoOriginal=original}
+function resetCommitteeDemo(){if(window._demoOriginal){state=window._demoOriginal;save();render();delete window._demoOriginal;toast('Demo state restored')}else{resetLife()}}
+function renderFinance(){const income=state.job==='No full-time job'?0:(state.job.includes('Software')?28000:state.job.includes('Banking')?24000:state.job.includes('E-commerce')?21000:18000);state.monthlyIncome=income;const city=cityProfiles[state.city]||cityProfiles.Delhi;state.monthlyExpense=Math.round(4500*city.cost+(state.assets.includes('Vehicle Owner')?1200:0));const net=income-state.monthlyExpense;document.getElementById('financeCard').innerHTML=`<div class="metric-row"><span>Monthly income</span><b>${money(income)}</b></div><div class="metric-row"><span>Estimated living cost</span><b>${money(state.monthlyExpense)}</b></div><div class="metric-row"><span>Monthly surplus</span><b>${money(net)}</b></div><div class="metric-row"><span>Financial resilience</span><b>${Math.round(state.finance)}%</b></div><div class="prob"><i style="width:${state.finance}%;background:var(--teal)"></i></div>`;document.getElementById('financeList').innerHTML=moneyMoves.map((m,i)=>`<div class="item"><div class="item-icon">${m.icon}</div><div class="item-body"><b>${m.title}</b><span>${m.desc}</span></div><button class="mini-btn ${state.cash<m.cost?'alt':''}" data-money="${i}" ${state.cash<m.cost?'disabled':''}>${state.cash<m.cost?'Need cash':'Choose'}</button></div>`).join('');document.querySelectorAll('[data-money]').forEach(b=>b.onclick=()=>{const m=moneyMoves[+b.dataset.money];if(state.cash<m.cost)return;state.cash-=m.cost;['finance','career','wellbeing','social'].forEach(k=>{if(m[k])state[k]=clamp(state[k]+m[k])});state.score+=m.score;addTag(m.tag);if(m.tag==='Vehicle Owner'&&!state.assets.includes(m.tag))state.assets.push(m.tag);state.log.unshift(`Financial decision: ${m.title}.`);checkQuests();save();render();toast('Money decision applied')})}
+function renderSocial(){const r=state.relationships;document.getElementById('socialCard').innerHTML=`<div class="metric-row"><span>Family support</span><b>${r.family}%</b></div><div class="metric-row"><span>Friends / community</span><b>${r.friend}%</b></div><div class="metric-row"><span>Mentorship</span><b>${r.mentor}%</b></div><div class="metric-row"><span>Overall social</span><b>${Math.round(state.social)}%</b></div>`;document.getElementById('socialList').innerHTML=socialOptions.map((o,i)=>`<div class="item"><div class="item-icon">${o.icon}</div><div class="item-body"><b>${o.title}</b><span>${o.desc}</span></div><button class="mini-btn" data-social="${i}">Do</button></div>`).join('');document.querySelectorAll('[data-social]').forEach(b=>b.onclick=()=>{const o=socialOptions[+b.dataset.social];state.relationships[o.stat]=clamp(state.relationships[o.stat]+o.gain);if(o.social)state.social=clamp(state.social+o.social);if(o.wellbeing)state.wellbeing=clamp(state.wellbeing+o.wellbeing);if(o.career)state.career=clamp(state.career+o.career);state.score+=o.score;addTag(o.tag);state.log.unshift(`Social choice: ${o.title}.`);save();render();toast('Your network grew')})}
+
+function renderStats(){const stats=[['Education',state.education,'#2268d9'],['Career',state.career,'#18a99a'],['Finance',state.finance,'#f2a629'],['Wellbeing',state.wellbeing,'#31b36b']];document.getElementById('stats').innerHTML=stats.map(([k,v,c])=>`<div class="stat"><div class="stat-top"><span>${k}</span><span>${Math.round(v)}%</span></div><div class="bar"><i style="width:${v}%;background:${c}"></i></div></div>`).join('')}
+function renderEvent(){const e=events[state.currentEvent%events.length];document.getElementById('eventCard').innerHTML=`<div class="event-head"><div class="event-icon">${e.icon}</div><div><h4>${e.title}</h4><p>${e.text}</p></div></div><div class="choices">${e.choices.map((c,i)=>`<button class="choice" data-choice="${i}"><strong>${c.label}</strong><span>${c.sub}</span></button>`).join('')}</div><div class="result" id="resultBox"></div>`;document.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>{const c=e.choices[+b.dataset.choice];applyChange(c);toast(c.note)});}
+function renderCareer(){document.getElementById('careerList').innerHTML=careers.map((j,i)=>{const eligible=state.education>=j.req;return `<div class="item"><div class="item-icon">${j.icon}</div><div class="item-body"><b>${j.title}</b><span>${j.city} • ${money(j.pay)}/month • Edu ${j.req}+</span></div><button class="mini-btn ${eligible?'':'alt'}" data-job="${i}" ${eligible?'':'disabled'}>${eligible?'Apply':'Locked'}</button></div>`}).join('');document.querySelectorAll('[data-job]').forEach(b=>b.onclick=()=>{const j=careers[+b.dataset.job];state.job=j.title;state.cash+=j.pay;state.career=clamp(state.career+j.career);state.score+=18;addTag('Employed');state.log.unshift(`You joined as ${j.title}.`);save();render();toast('Job secured: '+j.title)});document.getElementById('careerStatus').textContent=state.job;}
+function renderEducation(){document.getElementById('educationList').innerHTML=eduOptions.map((e,i)=>`<div class="item"><div class="item-icon">${e.icon}</div><div class="item-body"><b>${e.title}</b><span>${e.desc} • ${money(e.cost)}</span></div><button class="mini-btn" data-edu="${i}">${e.label}</button></div>`).join('');document.querySelectorAll('[data-edu]').forEach(b=>b.onclick=()=>{const e=eduOptions[+b.dataset.edu];if(state.cash<e.cost){toast('Not enough cash for this option');return}state.cash-=e.cost;state.education=clamp(state.education+e.gain);state.score+=12;state.degree=e.title;addTag('Learner');state.log.unshift(`You joined ${e.title}.`);checkQuests();save();render();toast('Education path updated')});document.getElementById('eduStatus').textContent=state.degree;}
+function renderQuests(){document.getElementById('questList').innerHTML=quests.map(q=>{const done=!!state.completed[q.id];return `<div class="item quest ${done?'done':''}"><div class="check">${done?'✓':q.icon}</div><div class="item-body"><b>${q.title}</b><span>${done?'Completed':'Reward: +'+q.reward+' life score'}</span></div><span class="tag">${done?'DONE':'ACTIVE'}</span></div>`}).join('')}
+function renderProfile(){document.getElementById('profileName').textContent=state.name;document.getElementById('profileMeta').textContent=`${state.city} • Age ${state.age}`;document.getElementById('score').textContent=state.score;document.getElementById('summary').innerHTML=`<div class="list"><div><b>Education</b><div class="muted">${state.degree}</div></div><div><b>Career</b><div class="muted">${state.job}</div></div><div><b>Cash</b><div class="muted">${money(state.cash)}</div></div><div><b>Recent life event</b><div class="muted">${state.log[0]||'Your story is just beginning.'}</div></div></div>`;document.getElementById('tags').innerHTML=state.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
+function render(){document.getElementById('playerName').textContent=state.name;document.getElementById('playerMeta').textContent=`${state.city} • ${state.family.name}`;document.getElementById('wallet').textContent=money(state.cash);document.getElementById('dayLabel').textContent=`Age ${state.age}`;renderStats();renderDailyActions();renderEvent();renderCareer();renderEducation();renderQuests();renderEngine();renderFinance();renderSocial();renderProfile();}
+
+function resetLife(){state=baseState();bgPick=backgrounds[1];document.getElementById('onboarding').classList.add('show');document.getElementById('nameInput').value='Arjun Sharma';document.getElementById('cityInput').value='Delhi';document.getElementById('familyTitle').textContent=bgPick.name;document.getElementById('familyDesc').textContent=bgPick.desc;}
+function revealFamily(){bgPick=backgrounds[Math.floor(Math.random()*backgrounds.length)];document.getElementById('familyTitle').textContent=bgPick.name;document.getElementById('familyDesc').textContent=bgPick.desc;}
+
+document.getElementById('newLifeBtn').onclick=resetLife;document.getElementById('spinBtn').onclick=revealFamily;document.getElementById('beginBtn').onclick=()=>{state=baseState();state.name=document.getElementById('nameInput').value.trim()||'Player';state.city=document.getElementById('cityInput').value;state.focus=document.getElementById('focusInput').value;state.family=bgPick;state.cash=bgPick.cash;state.finance=bgPick.wealth;state.social=bgPick.social;if(state.focus==='career')state.career+=5;if(state.focus==='wealth')state.finance+=5;if(state.focus==='learning')state.education+=5;save();document.getElementById('onboarding').classList.remove('show');render();toast('Your Indian life has begun!')};
+document.getElementById('ageBtn').onclick=()=>{const city=cityProfiles[state.city]||cityProfiles.Delhi;state.age++;const income=state.job==='No full-time job'?2500:(state.job.includes('Software')?28000:state.job.includes('Banking')?24000:state.job.includes('E-commerce')?21000:18000);state.cash+=Math.round(income*.22);state.wellbeing=clamp(state.wellbeing+(Math.random()>.5?2:-2)*city.stress);state.currentEvent=(state.currentEvent+1)%events.length;state.actionPoints=3;state.score+=5;state.log.unshift(`You turned ${state.age}. The calibration engine refreshed your opportunity profile.`);checkQuests();save();render();toast(`Age ${state.age}: a new year begins`)};
+
+function show(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.target===id));document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.target));
+document.getElementById('committeeDemoBtn').onclick=runCommitteeDemo;document.getElementById('resetDemoBtn').onclick=resetCommitteeDemo;renderDemoSteps(0);
+render();
+</script>
+</body>
+</html>
